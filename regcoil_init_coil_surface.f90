@@ -187,7 +187,7 @@ subroutine regcoil_init_coil_surface()
      mpol_coil = min(ntheta_coil / 2, max_mpol_coil)
      ntor_coil = min( nzeta_coil / 2, max_ntor_coil)
      if (verbose) print "(a,i3,a,i3)", "   Representing the offset surface with mpol=",mpol_coil,", ntor=",ntor_coil
-     call regcoil_init_Fourier_modes(mpol_coil, ntor_coil, mnmax_coil, xm_coil, xn_coil, .true.)
+     call regcoil_init_Fourier_modes(mpol_coil, ntor_coil, mnmax_coil, xm_coil, xn_coil, .true.,0)
      xn_coil = xn_coil * nfp
      allocate(rmnc_coil(mnmax_coil))
      allocate(rmns_coil(mnmax_coil))

@@ -4,11 +4,11 @@ module regcoil_init_Fourier_modes_mod
 
 contains
 
-  subroutine regcoil_init_Fourier_modes(mpol, ntor, mnmax, xm, xn, include_00)
+  subroutine regcoil_init_Fourier_modes(mpol, ntor, mnmax, xm, xn, include_00,helicity_ratio)
 
     implicit none
 
-    integer :: mpol, ntor, mnmax
+    integer :: mpol, ntor, mnmax, helicity_ratio
     integer, dimension(:), allocatable :: xm, xn
     logical, intent(in) :: include_00
     
@@ -18,9 +18,12 @@ contains
     ! xm is nonnegative.
     ! xn can be negative, zero, or positive.
     ! When xm is 0, xn must be 0 or positive.
-    mnmax = mpol*(ntor*2+1) + ntor
-    if (include_00) mnmax = mnmax + 1
-   
+    mnmax = mpol*(ntor*2+1) + ntor! make this just the number of basis modes I have...
+    if (helicity_ratio .ne. 0) mnmax = ntor ! we only will have ntor modes, only ntor matters
+
+    if (include_00) mnmax = mnmax + 1! ignore for now
+
+   ! helicity_ratio is s.t. m = - (helicity_ratio) * n
 
     if (allocated(xm)) deallocate(xm)
     allocate(xm(mnmax),stat=iflag)
@@ -30,25 +33,44 @@ contains
     allocate(xn(mnmax),stat=iflag)
     if (iflag .ne. 0) stop 'init_Fourier Allocation error!'
 
+! how this will work is we will have 
+! xn go from 1:ntor, then xm = -c * xn
+! this way we ensure that every fourier basis mode
+! is a fxn of the form cos(xn*(-c*u - v)) i.e. they all have the same helicity xm/xn=-c
+
     xm = 0
     xn = 0
 
     ! Handle the xm=0 modes:
     index = 0
     if (include_00) index = 1
-    do jn = 1, ntor
-       index = index + 1
-       xn(index)=jn
-    end do
-    
+    if (helicity_ratio .eq. 0) then
+       do jn = 1, ntor
+          index = index + 1
+          xn(index)=jn
+       end do
+    end if
     ! Handle the xm>0 modes:
-    do jm = 1,mpol
-       do jn = -ntor, ntor
+    
+    if (helicity_ratio .eq. 0) then
+       do jm = 1,mpol
+          do jn = -ntor, ntor
+             index = index + 1
+             xn(index) = jn
+             xm(index) = jm
+          end do
+       end do
+    end if
+    !do jm = 1,mpol
+! if helicity ratio is not zero
+    if (helicity_ratio .ne. 0) then
+       do jn = 1, ntor
           index = index + 1
           xn(index) = jn
-          xm(index) = jm
+          xm(index) = -helicity_ratio * jn
        end do
-    end do
+    end if
+    !end do
     
     if (index .ne. mnmax) then
        print *,"Error!  index=",index," but mnmax=",mnmax
