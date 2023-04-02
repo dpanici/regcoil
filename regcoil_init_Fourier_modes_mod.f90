@@ -64,10 +64,10 @@ contains
     !do jm = 1,mpol
 ! if helicity ratio is not zero
     if (helicity_ratio .ne. 0) then
-       do jn = 1, ntor
+       do jm = 1, mpol
           index = index + 1
-          xn(index) = jn
-          xm(index) = -helicity_ratio * jn
+          xm(index) = jm
+          xn(index) = -helicity_ratio * jm
        end do
     end if
     !end do
