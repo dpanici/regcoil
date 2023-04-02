@@ -19,11 +19,11 @@ contains
     ! xn can be negative, zero, or positive.
     ! When xm is 0, xn must be 0 or positive.
     mnmax = mpol*(ntor*2+1) + ntor! make this just the number of basis modes I have...
-    if (helicity_ratio .ne. 0) mnmax = ntor ! we only will have ntor modes, only ntor matters
+    if (helicity_ratio .ne. 0) mnmax = mpol ! we only will have mpol modes
 
     if (include_00) mnmax = mnmax + 1! ignore for now
 
-   ! helicity_ratio is s.t. m = - (helicity_ratio) * n
+   ! helicity_ratio is s.t. n = - (helicity_ratio) * m
 
     if (allocated(xm)) deallocate(xm)
     allocate(xm(mnmax),stat=iflag)
@@ -36,7 +36,7 @@ contains
 ! how this will work is we will have 
 ! xn go from 1:ntor, then xm = -c * xn
 ! this way we ensure that every fourier basis mode
-! is a fxn of the form cos(xn*(-c*u - v)) i.e. they all have the same helicity xm/xn=-c
+! is a fxn of the form cos(xm*(u + c*v)) i.e. they all have the same helicity xn/xm=-c
 
     xm = 0
     xn = 0
